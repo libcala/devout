@@ -3,7 +3,11 @@ name = "devout"
 version = "0.0.1"
 authors = ["Jeron Aldaron Lau <jeronlau@plopgrizzly.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "MIT / BSL-1.0"
+documentation = "https://docs.rs/devout"
+repository = "https://github.com/libcala/devout"
+readme = "README.md"
+description = "A simple cross-platform logging library."
+keywords = ["logging", "print", "wasm"]
 
 [dependencies]
