@@ -12,3 +12,7 @@ keywords = ["logging", "print", "wasm"]
 
 [target.'cfg(target_arch = "wasm32")'.dependencies.cala_core]
 path = "../cala_core"
+
+[features]
+default = []
+devel = []

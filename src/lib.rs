@@ -7,6 +7,8 @@
 //!
 //! const INFO: &str = "Info";
 //!
+//! // Prints twice when "dev" feature is enabled, once otherwise
+//! dev!(INFO, "Result: {}", 4.4);
 //! out!(INFO, "Result: {}", 4.4);
 //! ```
 
@@ -16,7 +18,7 @@
     html_favicon_url = "https://libcala.github.io/icon.svg"
 )]
 
-/// Use for messages to be journaled during both production and debugging.
+/// Use for messages to be journaled during both production and development.
 #[macro_export]
 macro_rules! out {
     ($tag:ident $(,)?) => {{
@@ -30,17 +32,17 @@ macro_rules! out {
     }};
 }
 
-/// Use for messages to be journaled only during debugging.
+/// Use for messages to be journaled only during development.
 #[macro_export]
 macro_rules! dev {
     ($tag:ident $(,)?) => {{
-        $crate::out!($tag, "");
+        $crate::dev!($tag, "");
     }};
     ($tag:ident, $fmt:expr $(,)?) => {{
-        $crate::_journal_hidden($tag, format_args!($fmt));
+        $crate::_journal_hidden_devel($tag, format_args!($fmt));
     }};
     [$tag:ident, $fmt:expr, $($args:tt)* $(,)?] => {{
-        $crate::_journal_hidden($tag, format_args!($fmt, $($args)*));
+        $crate::_journal_hidden_devel($tag, format_args!($fmt, $($args)*));
     }};
 }
 
