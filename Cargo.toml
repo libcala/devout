@@ -1,18 +1,38 @@
+# DevOut
+#
+# Copyright (c) 2019-2020 Jeron Aldaron Lau
+# 
+# Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
+# https://apache.org/licenses/LICENSE-2.0>, or the Zlib License, <LICENSE-ZLIB
+# or http://opensource.org/licenses/Zlib>, at your option. This file may not be
+# copied, modified, or distributed except according to those terms.
+
 [package]
 name = "devout"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["Jeron Aldaron Lau <jeronlau@plopgrizzly.com>"]
-edition = "2018"
-license = "MIT / BSL-1.0"
-documentation = "https://docs.rs/devout"
-repository = "https://github.com/libcala/devout"
-readme = "README.md"
-description = "A simple cross-platform logging library."
-keywords = ["logging", "print", "wasm"]
+license = "Apache-2.0 OR Zlib"
 
-[target.'cfg(target_arch = "wasm32")'.dependencies.cala_core]
-path = "../cala_core"
+description = "A simple cross-platform logging library."
+repository = "https://github.com/libcala/devout"
+documentation = "https://docs.rs/devout"
+homepage = "https://github.com/libcala/devout/blob/master/CHANGELOG.md"
+include = ["Cargo.toml", "README.md", "LICENSE-ZLIB", "LICENSE-APACHE", "src/*"]
+categories = ["development-tools::debugging", "wasm"]
+keywords = ["logging", "print", "wasm", "journal", "output"]
+readme = "README.md"
+edition = "2018"
+
+[dependencies]
+
+[build-dependencies]
+
+[dev-dependencies]
+
+[package.metadata.docs.rs]
+all-features = true
+default-target = "x86_64-unknown-linux-gnu"
 
 [features]
 default = []
-devel = []
+dev = []
