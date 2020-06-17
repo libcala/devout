@@ -1,28 +1,24 @@
-use std::io::Write;
+use std::cell::RefCell;
+use std::fmt::Write;
+
+// FIXME: Don't block
+/*fn get_writer() -> (std::sync::mpsc::Sender, std::sync::mpsc::Receiver) {
+    std::sync::mpsc::channel()
+}*/
+
+thread_local!(static MESSAGE: RefCell<String> = RefCell::new(String::new()));
 
 #[doc(hidden)]
-pub fn _out(string: &str) {
-    let out = std::io::stdout();
-    let mut lock = out.lock();
-
-    let _ = lock.write_all(string.as_bytes());
-    let _ = lock.write_all(b"\n");
-}
-
-#[doc(hidden)]
-pub fn _dev(string: &str) {
-    let err = std::io::stderr();
-    let mut lock = err.lock();
-
-    let _ = lock.write_all(string.as_bytes());
-    let _ = lock.write_all(b"\n");
-}
-
-#[doc(hidden)]
-pub fn _fix(string: &str) {
-    let err = std::io::stderr();
-    let mut lock = err.lock();
-
-    let _ = lock.write_all(string.as_bytes());
-    let _ = lock.write_all(b"\n");
+pub fn _journal_hidden(tag: &str, args: std::fmt::Arguments) {
+    MESSAGE.with(|message| {
+        let message = &mut *message.borrow_mut();
+        // Errors can't happen on `String`, so ignore the `Result`.
+        let _ = message.write_fmt(format_args!("[{}]: {}\n", tag, args));
+        // Send the message by locking and writing to stdout.
+        use std::io::Write;
+        // Ignore errors, writing to stdout should work.
+        let _ = std::io::stdout().lock().write_all(message.as_bytes());
+        // Always clear after send, in case of sensitive information printing.
+        message.clear();
+    });
 }

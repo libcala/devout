@@ -10,4 +10,5 @@ readme = "README.md"
 description = "A simple cross-platform logging library."
 keywords = ["logging", "print", "wasm"]
 
-[dependencies]
+[target.'cfg(target_arch = "wasm32")'.dependencies.cala_core]
+path = "../cala_core"

@@ -1,13 +1,13 @@
-//! # Devout
+//! # DevOut
 //! A simple cross-platform logging library.
 //!
 //! ## Example
 //! ```rust
-//! use devout::*;
+//! use devout::{dev, out};
 //!
-//! fix!("FIXME: {}", 12);
-//! dev!("Test: {}", 40);
-//! out!("Result: {}", 4.4);
+//! const INFO: &str = "Info";
+//!
+//! out!(INFO, "Result: {}", 4.4);
 //! ```
 
 #![warn(missing_docs)]
@@ -15,6 +15,34 @@
     html_logo_url = "https://libcala.github.io/logo.svg",
     html_favicon_url = "https://libcala.github.io/icon.svg"
 )]
+
+/// Use for messages to be journaled during both production and debugging.
+#[macro_export]
+macro_rules! out {
+    ($tag:ident $(,)?) => {{
+        $crate::out!($tag, "");
+    }};
+    ($tag:ident, $fmt:expr $(,)?) => {{
+        $crate::_journal_hidden($tag, format_args!($fmt));
+    }};
+    [$tag:ident, $fmt:expr, $($args:tt)*] => {{
+        $crate::_journal_hidden($tag, format_args!($fmt, $($args)*));
+    }};
+}
+
+/// Use for messages to be journaled only during debugging.
+#[macro_export]
+macro_rules! dev {
+    ($tag:ident $(,)?) => {{
+        $crate::out!($tag, "");
+    }};
+    ($tag:ident, $fmt:expr $(,)?) => {{
+        $crate::_journal_hidden($tag, format_args!($fmt));
+    }};
+    [$tag:ident, $fmt:expr, $($args:tt)* $(,)?] => {{
+        $crate::_journal_hidden($tag, format_args!($fmt, $($args)*));
+    }};
+}
 
 #[cfg(target_arch = "wasm32")]
 mod web;
@@ -24,35 +52,3 @@ pub use self::web::*;
 mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub use self::std::*;
-
-/// Print line to stdout.  Use for messages that will print in production.
-#[macro_export] macro_rules! out {
-    () => {{
-        $crate::_out("");
-    }};
-    ($($arg:tt)*) => {{
-        $crate::_out(&format!($($arg)*));
-    }};
-}
-
-/// Print line to stderr.  Use for messages that will print in development, but
-/// not in production.
-#[macro_export] macro_rules! dev {
-    () => {{
-        $crate::_dev("");
-    }};
-    ($($arg:tt)*) => {{
-        $crate::_dev(&format!($($arg)*));
-    }};
-}
-
-/// Print line to stderr.  Use for runtime cases where something should be
-/// fixed.  It does not have to be detremental.
-#[macro_export] macro_rules! fix {
-    () => {{
-        $crate::_fix("");
-    }};
-    ($($arg:tt)*) => {{
-        $crate::_fix(&format!($($arg)*));
-    }};
-}
