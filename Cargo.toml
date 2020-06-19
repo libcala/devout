@@ -23,7 +23,8 @@ keywords = ["logging", "print", "wasm", "journal", "output"]
 readme = "README.md"
 edition = "2018"
 
-[dependencies]
+[dependencies.cala_core]
+path = "../cala_core"
 
 [build-dependencies]
 

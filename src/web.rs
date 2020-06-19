@@ -15,10 +15,11 @@ static mut CONSOLE_INFO: MaybeUninit<JsFn> = MaybeUninit::uninit();
 static INIT: Once = Once::new();
 
 // Log a message to the console.
+#[allow(unsafe_code)]
 fn console_info(a: &str) {
     unsafe {
         INIT.call_once(|| {
-            CONSOLE_INFO = MaybeUninit::new(JsFn::new("console.info(param_a); return 4294967295;"));
+            CONSOLE_INFO = MaybeUninit::new(JsFn::new("console.info(param_a);"));
         });
         let console_info = &*CONSOLE_INFO.as_ptr();
         let r = console_info.call(Some(JsString::new(a).as_var()), None);
@@ -33,10 +34,11 @@ static INIT_DEV: Once = Once::new();
 
 // Log a message to the console.
 #[cfg(feature = "dev")]
+#[allow(unsafe_code)]
 fn console_debug(a: &str) {
     unsafe {
         INIT_DEV.call_once(|| {
-            CONSOLE_DEBUG = MaybeUninit::new(JsFn::new("console.debug(param_a); return 4294967295;"));
+            CONSOLE_DEBUG = MaybeUninit::new(JsFn::new("console.debug(param_a);"));
         });
         let console_debug = &*CONSOLE_DEBUG.as_ptr();
         let r = console_debug.call(Some(JsString::new(a).as_var()), None);
@@ -47,7 +49,7 @@ fn console_debug(a: &str) {
 thread_local!(static MESSAGE: RefCell<String> = RefCell::new(String::new()));
 
 #[doc(hidden)]
-pub fn _journal_hidden(tag: &str, args: std::fmt::Arguments) {
+pub fn _journal_hidden(tag: &str, args: std::fmt::Arguments<'_>) {
     MESSAGE.with(|message| {
         let message = &mut *message.borrow_mut();
         // Errors can't happen on `String`, so ignore the `Result`.
@@ -60,7 +62,7 @@ pub fn _journal_hidden(tag: &str, args: std::fmt::Arguments) {
 }
 
 #[doc(hidden)]
-pub fn _journal_hidden_dev(_tag: &str, _args: std::fmt::Arguments) {
+pub fn _journal_hidden_dev(_tag: &str, _args: std::fmt::Arguments<'_>) {
     #[cfg(feature = "dev")] {
         MESSAGE.with(|message| {
             let message = &mut *message.borrow_mut();

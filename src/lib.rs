@@ -29,7 +29,7 @@
     html_favicon_url = "https://raw.githubusercontent.com/libcala/devout/master/res/logo.svg",
     html_root_url = "https://docs.rs/devout"
 )]
-#![forbid(unsafe_code)]
+#![deny(unsafe_code)]
 #![warn(
     anonymous_parameters,
     missing_copy_implementations,
