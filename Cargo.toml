@@ -23,8 +23,10 @@ keywords = ["logging", "print", "wasm", "journal", "output"]
 readme = "README.md"
 edition = "2018"
 
-[dependencies.cala_core]
+# Use cala_core to support all of: wasm-pack, cargo-cala-web and cargo-web
+[target.'cfg(target_arch = "wasm32")'.dependencies.cala_core]
 path = "../cala_core"
+optional = true
 
 [build-dependencies]
 
@@ -37,3 +39,6 @@ default-target = "x86_64-unknown-linux-gnu"
 [features]
 default = []
 dev = []
+cala = ["cala_core/cala"]
+stdweb = ["cala_core/stdweb"]
+wasm-bindgen = ["cala_core/wasm-bindgen"]
