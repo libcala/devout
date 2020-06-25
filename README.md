@@ -69,7 +69,7 @@ packages, so it may seem a little weird.
  - [x] Static Web App
    - [x] wasm32-unknown-emscripten, **wasm32-unknown-unknown**
    - [x] **asmjs-unknown-emscripten** (fallback)
- - [x] **wasm32-wasi** (WASI App)
+ - [ ] **wasm32-wasi** (WASI App)
 
 ### Windows
  - [x] i586-pc-windows-msvc, i686-pc-windows-msvc, **i686-pc-windows-gnu**

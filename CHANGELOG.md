@@ -7,7 +7,7 @@ and this project adheres to
 
 ## [0.1.0] - 2020-06-17
 ### Added
-- `cargo-web` and `wasm-pack` support via `cargo_cala`
+- `cargo-web` and `wasm-pack` support via `cala_core`
 
 ### Changed
 - `dev!()` and `out!()` now take a `tag` as the first parameter.
