@@ -5,16 +5,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://github.com/AldaronLau/semver#a-guide-to-semver).
 
-## [0.1.0] - 2020-06-17
+## [0.2.0] - 2020-11-23
 ### Added
-- `cargo-web` and `wasm-pack` support via `cala_core`
-
-### Changed
-- `dev!()` and `out!()` now take a `tag` as the first parameter.
+ - `Tag` struct for grouping log messages together to display or hide.
+ - `log!()` macro to log a message from a tag.
 
 ### Removed
-- `fix!()` macro
+ - Support for `cargo-web` (no longer maintained)
+ - Separate `dev!()` and `out!()` macros, use `Tag`s and `log!()` instead.
+
+## [0.1.0] - 2020-06-17
+### Added
+ - `cargo-web` and `wasm-pack` support via `cala_core`
+
+### Changed
+ - `dev!()` and `out!()` now take a `tag` as the first parameter.
+
+### Removed
+ - `fix!()` macro
 
 ## [0.0.1] - 2019-12-21
 ### Added
-- `dev!()`, `fix!()` and `out!()` macros.
+ - `dev!()`, `fix!()` and `out!()` macros.
