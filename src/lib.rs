@@ -15,18 +15,16 @@
 //! ```
 //!
 //! ```rust
-//! use devout::{dev, out};
+//! use devout::{log, Tag};
 //!
-//! const INFO: &str = "Info";
+//! const INFO: Tag = Tag::new("Info").show(true);
 //!
-//! // Prints twice when "dev" feature is enabled, once otherwise
-//! dev!(INFO, "Result: {}", 4.4);
-//! out!(INFO, "Result: {}", 4.4);
+//! log!(INFO, "Result: {}", 4.4);
 //! ```
 
 #![doc(
-    html_logo_url = "https://raw.githubusercontent.com/libcala/devout/master/res/logo.svg",
-    html_favicon_url = "https://raw.githubusercontent.com/libcala/devout/master/res/logo.svg",
+    html_logo_url = "https://libcala.github.io/logo.svg",
+    html_favicon_url = "https://libcala.github.io/icon.svg",
     html_root_url = "https://docs.rs/devout"
 )]
 #![deny(unsafe_code)]
@@ -46,39 +44,72 @@
     variant_size_differences
 )]
 
-#[cfg(target_arch = "wasm32")]
-mod web;
-#[cfg(target_arch = "wasm32")]
-pub use self::web::*;
-#[cfg(not(target_arch = "wasm32"))]
-mod std;
-#[cfg(not(target_arch = "wasm32"))]
-pub use self::std::*;
+/// A tag to identify a log.
+#[derive(Copy, Clone, Debug)]
+pub struct Tag(Option<&'static str>);
 
-/// Use for messages to be journaled during both production and development.
-#[macro_export]
-macro_rules! out {
-    ($tag:ident $(,)?) => {{
-        $crate::out!($tag, "");
-    }};
-    ($tag:ident, $fmt:expr $(,)?) => {{
-        $crate::_journal_hidden($tag, format_args!($fmt));
-    }};
-    [$tag:ident, $fmt:expr, $($args:tt)*] => {{
-        $crate::_journal_hidden($tag, format_args!($fmt, $($args)*));
-    }};
+impl Tag {
+    /// Create a new tag by passing a textual identifier.
+    #[inline(always)]
+    pub const fn new(ident: &'static str) -> Self {
+        Tag(Some(ident))
+    }
+
+    /// Hide logs using this tag.
+    #[inline(always)]
+    pub const fn hide(self) -> Self {
+        Tag(None)
+    }
+
+    /// Choose whether or not to show this tag based on a boolean value.
+    /// `true` is show, and `false` is hide.
+    #[inline(always)]
+    pub const fn show(self, log: bool) -> Self {
+        if log {
+            self
+        } else {
+            self.hide()
+        }
+    }
+
+    /// Returns true if logs using this tag are shown.
+    #[inline(always)]
+    pub const fn is_shown(self) -> bool {
+        self.0.is_some()
+    }
+
+    /// Get tag as optional identifier.
+    #[inline(always)]
+    const fn as_option(&self) -> Option<&'static str> {
+        self.0
+    }
+
+    /// Print out a log message with this tag.  Prefer `log!()` instead.
+    #[inline(always)]
+    pub fn log(&self, args: std::fmt::Arguments<'_>) {
+        if let Some(tag) = self.as_option() {
+            #[cfg(not(target_arch = "wasm32"))]
+            let _ = <std::io::Stdout as std::io::Write>::write_fmt(
+                &mut std::io::stdout(),
+                format_args!("[{}] {}\n", tag, args),
+            );
+
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&wasm_bindgen::JsValue::from_str(&format!(
+                "[{}] {}",
+                tag, args
+            )));
+        }
+    }
 }
 
-/// Use for messages to be journaled only during development.
+/// Write a message to the log.
 #[macro_export]
-macro_rules! dev {
-    ($tag:ident $(,)?) => {{
-        $crate::dev!($tag, "");
+macro_rules! log {
+    ($tag:ident) => {{
+        $tag.log(format_args!(""));
     }};
-    ($tag:ident, $fmt:expr $(,)?) => {{
-        $crate::_journal_hidden_dev($tag, format_args!($fmt));
-    }};
-    [$tag:ident, $fmt:expr, $($args:tt)* $(,)?] => {{
-        $crate::_journal_hidden_dev($tag, format_args!($fmt, $($args)*));
+    ($tag:ident, $($arg:tt)*) => {{
+        $tag.log(format_args!($($arg)*));
     }};
 }
